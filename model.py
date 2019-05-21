@@ -62,6 +62,7 @@ def rhymeindex(lyrics):
 		print "Alright, building the list of all the rhymes"
 		for i in lyrics:
 			word = re.sub(r"\W+", '', i.split(" ")[-1]).lower()
+
 			rhymeslist = pronouncing.rhymes(word)
 			rhymeslist = [x.encode('UTF8') for x in rhymeslist]
 			rhymeslistends = []
