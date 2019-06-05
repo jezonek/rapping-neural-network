@@ -10,4 +10,4 @@ class QuotesSpider(scrapy.Spider):
 
     def parse(self,response):
         for rhyme in response.css('.load_word::text').getall():
-            yield rhyme
+            yield {'rhyme': rhyme}

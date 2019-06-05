@@ -11,9 +11,11 @@ from keras.layers.core import Dense
 
 depth = 4 # depth of the network. changing will require a retrain
 maxsyllables = 16 # maximum syllables per line. Change this freely without retraining the network
-train_mode = False
-artist = "kanye_west" # used when saving the trained model
-rap_file = "neural_rap.txt" # where the rap is written to
+train_mode = True
+artist = "The_Beatles" # used when saving the trained model
+rap_file = "The_beatles_rap.txt" # where the rap is written to
+
+TF_FORCE_GPU_ALLOW_GROWTH = True
 
 def create_network(depth):
 	model = Sequential()
@@ -27,7 +29,7 @@ def create_network(depth):
 
 	if artist + ".rap" in os.listdir(".") and train_mode == False:
 		model.load_weights(str(artist + ".rap"))
-		print "loading saved network: " + str(artist) + ".rap" 
+		print("loading saved network: " + str(artist) + ".rap")
 	return model
 
 def markov(text_file):
@@ -39,7 +41,7 @@ def syllables(line):
 	count = 0
 	for word in line.split(" "):
 		vowels = 'aeiouy'
-		word = word.lower().strip(".:;?!")
+		word = word.lower().strip('.:;?!/"')
 		if word[0] in vowels:
 			count +=1
 		for index in range(1,len(word)):
@@ -55,11 +57,11 @@ def syllables(line):
 
 def rhymeindex(lyrics):
 	if str(artist) + ".rhymes" in os.listdir(".") and train_mode == False:
-		print "loading saved rhymes from " + str(artist) + ".rhymes"
+		print ("loading saved rhymes from " + str(artist) + ".rhymes")
 		return open(str(artist) + ".rhymes", "r").read().split("\n")
 	else:
 		rhyme_master_list = []
-		print "Alright, building the list of all the rhymes"
+		print ("Alright, building the list of all the rhymes")
 		for i in lyrics:
 			word = re.sub(r"\W+", '', i.split(" ")[-1]).lower()
 
@@ -83,7 +85,7 @@ def rhymeindex(lyrics):
 		f = open(str(artist) + ".rhymes", "w")
 		f.write("\n".join(rhymelist))
 		f.close()
-		print rhymelist
+		print(rhymelist)
 		return rhymelist
 
 def rhyme(line, rhyme_list):
@@ -191,9 +193,9 @@ def compose_rap(lines, rhyme_list, lyrics_file, model):
 	return rap_vectors
 	
 def vectors_into_song(vectors, generated_lyrics, rhyme_list):
-	print "\n\n"	
-	print "About to write rap (this could take a moment)..."
-	print "\n\n"
+	print("\n\n")
+	print("About to write rap (this could take a moment)...")
+	print ("\n\n")
 	def last_word_compare(rap, line2):
 		penalty = 0 
 		for line1 in rap:
@@ -258,7 +260,7 @@ def vectors_into_song(vectors, generated_lyrics, rhyme_list):
 		for item in scorelist:
 			if item[1] == max_score:
 				rap.append(item[0])
-				print str(item[0])
+				print (str(item[0]))
 				
 				for i in dataset:
 					if item[0] == i[0]:
