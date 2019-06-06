@@ -8,6 +8,7 @@ import keras
 from keras.models import Sequential
 from keras.layers import LSTM 
 from keras.layers.core import Dense
+import tensorflow as tf
 
 depth = 4 # depth of the network. changing will require a retrain
 maxsyllables = 16 # maximum syllables per line. Change this freely without retraining the network
@@ -270,6 +271,7 @@ def vectors_into_song(vectors, generated_lyrics, rhyme_list):
 	return rap
 
 def train(x_data, y_data, model):
+
 	model.fit(np.array(x_data), np.array(y_data),
 			  batch_size=2,
 			  epochs=5,
@@ -289,6 +291,8 @@ def main(depth, train_mode):
 	
 	rhyme_list = rhymeindex(bars)
 	if train_mode == True:
+		sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
+		print(sess.run(c))
 		x_data, y_data = build_dataset(bars, rhyme_list)
 		train(x_data, y_data, model)
 
