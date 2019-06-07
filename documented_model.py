@@ -387,7 +387,7 @@ def train(x_data, y_data, model):
 def main(depth, train_mode):
     model = create_network(depth)
     # change the lyrics file to the file with the lyrics you want to be trained on
-    text_file = "jayz_lyrics.txt"
+    text_file = "beatles_lyrics.txt"
 
     if train_mode == True:
         bars = split_lyrics_file(text_file)
