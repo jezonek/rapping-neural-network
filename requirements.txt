@@ -1,5 +1,6 @@
-pronouncing==0.1.2
 pyttsx==1.1
 markovify==0.5.4
+tensorflow-gpu
 Keras
 numpy==1.12.1
+scrapy

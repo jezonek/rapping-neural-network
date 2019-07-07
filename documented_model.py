@@ -1,17 +1,18 @@
-import pronouncing
+
 import markovify
 import re
 import random
 import numpy as np
 import os
+from rhyme_finding import run_rhyme_spider,convert_json_to_list
 from keras.models import Sequential
 from keras.layers import LSTM
 
 depth = 4  # depth of the network. changing will require a retrain
 maxsyllables = 16  # maximum syllables per line. Change this freely without retraining the network
-train_mode = True
-artist = "the_beatles"  # used when saving the trained model
-rap_file = "neural_rap.txt"  # where the rap is written to
+train_mode = False
+artist = "ostr"  # used when saving the trained model
+rap_file = "ostr_text.txt"  # where the rap is written to
 
 
 def create_network(depth):
@@ -37,7 +38,7 @@ def create_network(depth):
     if artist + ".rap" in os.listdir(".") and train_mode == False:
         # loads the weights from the hdf5 file saved earlier
         model.load_weights(str(artist + ".rap"))
-        print "loading saved network: " + str(artist) + ".rap"
+        print("loading saved network: " + str(artist) + ".rap")
     return model
 
 
@@ -60,34 +61,40 @@ def syllables(line):
     for word in line.split(" "):
         vowels = 'aeiouy'
         word = word.lower().strip(".:;?!")
-        if word[0] in vowels:
-            count += 1
-        for index in range(1, len(word)):
-            if word[index] in vowels and word[index - 1] not in vowels:
+        try:
+            if word[0] in vowels:
                 count += 1
-        if word.endswith('e'):
-            count -= 1
-        if word.endswith('le'):
-            count += 1
-        if count == 0:
-            count += 1
-    return count / maxsyllables
+            for index in range(1, len(word)):
+                if word[index] in vowels and word[index - 1] not in vowels:
+                    count += 1
+            if word.endswith('e'):
+                count -= 1
+            if word.endswith('le'):
+                count += 1
+            if count == 0:
+                count += 1
+        except IndexError:
+            print("Error occured during syllables: {}".format(word))
+            continue
+        return count / maxsyllables
+
 
 
 # writes a rhyme list to a rhymes file that allows for use when
 # building the dataset, and composing the rap
 def rhymeindex(lyrics):
     if str(artist) + ".rhymes" in os.listdir(".") and train_mode == False:
-        print "loading saved rhymes from " + str(artist) + ".rhymes"
+        print("loading saved rhymes from " + str(artist) + ".rhymes")
         return open(str(artist) + ".rhymes", "r").read().split("\n")
     else:
         rhyme_master_list = []
-        print "Alright, building the list of all the rhymes"
+        print("Alright, building the list of all the rhymes")
         for i in lyrics:
             # grabs the last word in each bar
             word = re.sub(r"\W+", '', i.split(" ")[-1]).lower()
-            # pronouncing.rhymes gives us a word that rhymes with the word being passed in
-            rhymeslist = pronouncing.rhymes(word)
+            # fixed scrapy spider for searching rhymes in web
+            run_rhyme_spider(word)
+            rhymeslist = convert_json_to_list()
             # need to convert the unicode rhyme words to UTF8
             rhymeslist = [x.encode('UTF8') for x in rhymeslist]
             # rhymeslistends contains the last two characters for each word
@@ -120,7 +127,7 @@ def rhymeindex(lyrics):
         f = open(str(artist) + ".rhymes", "w")
         f.write("\n".join(rhymelist))
         f.close()
-        print rhymelist
+        print(rhymelist)
         return rhymelist
 
 
@@ -128,7 +135,9 @@ def rhymeindex(lyrics):
 # into a float
 def rhyme(line, rhyme_list):
     word = re.sub(r"\W+", '', line.split(" ")[-1]).lower()
-    rhymeslist = pronouncing.rhymes(word)
+
+    run_rhyme_spider(word)
+    rhymeslist = convert_json_to_list()
     rhymeslist = [x.encode('UTF8') for x in rhymeslist]
     rhymeslistends = []
     for i in rhymeslist:
@@ -269,9 +278,9 @@ def compose_rap(lines, rhyme_list, lyrics_file, model):
 
 
 def vectors_into_song(vectors, generated_lyrics, rhyme_list):
-    print "\n\n"
-    print "About to write rap (this could take a moment)..."
-    print "\n\n"
+    print("\n\n")
+    print("About to write rap (this could take a moment)...")
+    print("\n\n")
 
     # compare the last words to see if they are the same, if they are
     # increment a penalty variable which grants penalty points for being
@@ -279,18 +288,23 @@ def vectors_into_song(vectors, generated_lyrics, rhyme_list):
     def last_word_compare(rap, line2):
         penalty = 0
         for line1 in rap:
-            word1 = line1.split(" ")[-1]
-            word2 = line2.split(" ")[-1]
+            try:
+                word1 = line1.split(" ")[-1]
+                word2 = line2.split(" ")[-1]
 
-            # remove any punctuation from the words
-            while word1[-1] in "?!,. ":
-                word1 = word1[:-1]
+                # remove any punctuation from the words
+                while word1[-1] in "?!,. ":
+                    word1 = word1[:-1]
 
-            while word2[-1] in "?!,. ":
-                word2 = word2[:-1]
+                while word2[-1] in "?!,. ":
+                    word2 = word2[:-1]
 
-            if word1 == word2:
-                penalty += 0.2
+                if word1 == word2:
+                    penalty += 0.2
+            except IndexError:
+                print("Error in last word compare :{}".format(line2))
+                continue
+
 
         return penalty
 
@@ -307,10 +321,14 @@ def vectors_into_song(vectors, generated_lyrics, rhyme_list):
         # generate a score by subtracting from 1 the sum of the difference between
         # predicted syllables and generated syllables and the difference between
         # the predicted rhyme and generated rhyme and then subtract the penalty
-        score = 1.0 - (abs((float(desired_syllables) - float(syllables))) + abs(
-            (float(desired_rhyme) - float(rhyme)))) - penalty
+        try:
+            score = 1.0 - (abs((float(desired_syllables) - float(syllables))) + abs(
+                (float(desired_rhyme) - float(rhyme)))) - penalty
 
-        return score
+            return score
+        except TypeError:
+            print("Error occured durind calculed_score({},{},{},{})".format(vector_half,syllables,rhyme,penalty))
+            return None
 
     # generated a list of all the lines from generated_lyrics with their
     # line, syllables, and rhyme float value
@@ -351,14 +369,17 @@ def vectors_into_song(vectors, generated_lyrics, rhyme_list):
 
         fixed_score_list = []
         for score in scorelist:
-            fixed_score_list.append(float(score[1]))
+            try:
+                fixed_score_list.append(float(score[1]))
+            except TypeError:
+                continue
         # get the line with the max valued score from the fixed_score_list
         max_score = max(fixed_score_list)
         for item in scorelist:
             if item[1] == max_score:
                 # append item[0] (the line) to the rap
                 rap.append(item[0])
-                print str(item[0])
+                print(str(item[0]))
 
                 # remove the line we added to the rap so
                 # it doesn't get chosen again
@@ -387,7 +408,7 @@ def train(x_data, y_data, model):
 def main(depth, train_mode):
     model = create_network(depth)
     # change the lyrics file to the file with the lyrics you want to be trained on
-    text_file = "beatles_lyrics.txt"
+    text_file = "ostr_lyrics.txt"
 
     if train_mode == True:
         bars = split_lyrics_file(text_file)
