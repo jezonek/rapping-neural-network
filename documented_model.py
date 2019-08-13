@@ -1,4 +1,4 @@
-
+from __future__ import absolute_import
 import markovify
 import re
 import random
@@ -10,7 +10,7 @@ from keras.layers import LSTM
 
 depth = 4  # depth of the network. changing will require a retrain
 maxsyllables = 16  # maximum syllables per line. Change this freely without retraining the network
-train_mode = False
+train_mode = True
 artist = "ostr"  # used when saving the trained model
 rap_file = "ostr_text.txt"  # where the rap is written to
 
@@ -94,9 +94,10 @@ def rhymeindex(lyrics):
             word = re.sub(r"\W+", '', i.split(" ")[-1]).lower()
             # fixed scrapy spider for searching rhymes in web
             run_rhyme_spider(word)
-            rhymeslist = convert_json_to_list()
+            rhymeslist = convert_json_to_list(word)
             # need to convert the unicode rhyme words to UTF8
             rhymeslist = [x.encode('UTF8') for x in rhymeslist]
+            print(rhymeslist)
             # rhymeslistends contains the last two characters for each word
             # that could potentially rhyme with our word
             rhymeslistends = []
@@ -137,8 +138,9 @@ def rhyme(line, rhyme_list):
     word = re.sub(r"\W+", '', line.split(" ")[-1]).lower()
 
     run_rhyme_spider(word)
-    rhymeslist = convert_json_to_list()
+    rhymeslist = convert_json_to_list(word)
     rhymeslist = [x.encode('UTF8') for x in rhymeslist]
+    print(rhymeslist)
     rhymeslistends = []
     for i in rhymeslist:
         rhymeslistends.append(i[-2:])
