@@ -9,19 +9,19 @@ import time
 
 
 def run_rhyme_spider(word):
-    if os.path.exists("rymy/rymy/rymy_{}.json".format(word)):
-        os.remove("rymy/rymy/rymy_{}.json".format(word))
+    if os.path.exists("rymy/rymy/rymy.json".format(word)):
+        os.remove("rymy/rymy/rymy.json".format(word))
 
-    subprocess.check_call(["scrapy", "crawl", "rymek", "-o", "rymy_{}.json".format(word), "-a" "word={}".format(word)], cwd="rymy/rymy",
+    subprocess.check_call(["scrapy", "crawl", "rymek", "-o", "rymy.json", "-a" "word={}".format(word)], cwd="rymy/rymy",
                           shell=False)
     # process= CrawlerProcess({'FEED_FORMAT': 'json'})
     # process.crawl(QuotesSpider, word=word)
     # process.start(stop_after_crawl=True)
 
 
-def convert_json_to_list(word):
+def convert_json_to_list():
 
-    with open("rymy/rymy/rymy_{}.json".format(word), "r") as opened_file:
+    with open("rymy/rymy/rymy.json", "r") as opened_file:
         content = opened_file.read()
         try:
             content=json.loads(content)

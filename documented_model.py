@@ -94,7 +94,7 @@ def rhymeindex(lyrics):
             word = re.sub(r"\W+", '', i.split(" ")[-1]).lower()
             # fixed scrapy spider for searching rhymes in web
             run_rhyme_spider(word)
-            rhymeslist = convert_json_to_list(word)
+            rhymeslist = convert_json_to_list()
             # need to convert the unicode rhyme words to UTF8
             rhymeslist = [x.encode('UTF8') for x in rhymeslist]
             print(rhymeslist)
@@ -138,7 +138,7 @@ def rhyme(line, rhyme_list):
     word = re.sub(r"\W+", '', line.split(" ")[-1]).lower()
 
     run_rhyme_spider(word)
-    rhymeslist = convert_json_to_list(word)
+    rhymeslist = convert_json_to_list()
     rhymeslist = [x.encode('UTF8') for x in rhymeslist]
     print(rhymeslist)
     rhymeslistends = []
