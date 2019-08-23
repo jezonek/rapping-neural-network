@@ -83,7 +83,7 @@ def syllables(line):
 # writes a rhyme list to a rhymes file that allows for use when
 # building the dataset, and composing the rap
 def rhymeindex(lyrics):
-    if str(artist) + ".rhymes" in os.listdir(".") and train_mode == False:
+    if train_mode == False:
         print("loading saved rhymes from " + str(artist) + ".rhymes")
         return open(str(artist) + ".rhymes", "r").read().split("\n")
     else:
@@ -146,13 +146,15 @@ def rhyme(line, rhyme_list):
         rhymeslistends.append(i[-2:])
     try:
         rhymescheme = max(set(rhymeslistends), key=rhymeslistends.count)
+        rhymescheme = rhymescheme.decode("utf-8")
     except Exception:
         rhymescheme = word[-2:]
     try:
         float_rhyme = rhyme_list.index(rhymescheme)
         float_rhyme = float_rhyme / float(len(rhyme_list))
         return float_rhyme
-    except Exception:
+    except ValueError as e:
+        print("Value Error:{}".format(e.__str__()))
         return None
 
 
