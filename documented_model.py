@@ -102,7 +102,7 @@ def rhymeindex(lyrics):
             # that could potentially rhyme with our word
             rhymeslistends = []
             for i in rhymeslist:
-                rhymeslistends.append(i[-2:])
+                rhymeslistends.append(str(i[-2:]))
             try:
                 # rhymescheme gets all the unique two letter endings and then
                 # finds the one that occurs the most
@@ -328,7 +328,7 @@ def vectors_into_song(vectors, generated_lyrics, rhyme_list):
         try:
             score = 1.0 - (abs((float(desired_syllables) - float(syllables))) + abs(
                 (float(desired_rhyme) - float(rhyme)))) - penalty
-
+            print("Calculed_score({},{},{},{})".format(vector_half,syllables,rhyme,penalty))
             return score
         except TypeError:
             print("Error occured durind calculed_score({},{},{},{})".format(vector_half,syllables,rhyme,penalty))
