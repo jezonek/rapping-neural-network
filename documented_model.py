@@ -96,7 +96,6 @@ def rhymeindex(lyrics):
             run_rhyme_spider(word)
             rhymeslist = convert_json_to_list()
             # need to convert the unicode rhyme words to UTF8
-            rhymeslist = [x.encode('UTF8') for x in rhymeslist]
             print(rhymeslist)
             # rhymeslistends contains the last two characters for each word
             # that could potentially rhyme with our word
@@ -139,14 +138,16 @@ def rhyme(line, rhyme_list):
 
     run_rhyme_spider(word)
     rhymeslist = convert_json_to_list()
-    rhymeslist = [x.encode('UTF8') for x in rhymeslist]
     print(rhymeslist)
     rhymeslistends = []
     for i in rhymeslist:
         rhymeslistends.append(i[-2:])
     try:
         rhymescheme = max(set(rhymeslistends), key=rhymeslistends.count)
+
         rhymescheme = rhymescheme.decode("utf-8")
+    except AttributeError:
+        rhymescheme = rhymescheme
     except Exception:
         rhymescheme = word[-2:]
     try:
