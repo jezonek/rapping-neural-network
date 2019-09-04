@@ -4,3 +4,4 @@ tensorflow-gpu
 Keras
 numpy==1.12.1
 scrapy
+requests

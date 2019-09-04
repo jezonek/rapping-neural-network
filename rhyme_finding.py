@@ -3,6 +3,11 @@ import json
 import os
 import time
 
+from requests import get,post
+from requests.exceptions import RequestException
+from contextlib import closing
+from bs4 import BeautifulSoup
+
 
 # from rymy.rymy.spiders.rymek import QuotesSpider
 # from scrapy.crawler import CrawlerProcess
@@ -30,3 +35,59 @@ def convert_json_to_list():
         return [element["rhyme"] for element in content]
 
 
+def simple_get(url):
+    """
+    Attempts to get the content at `url` by making an HTTP GET request.
+    If the content-type of response is some kind of HTML/XML, return the
+    text content, otherwise return None.
+    """
+    try:
+        with closing(get(url, stream=True)) as resp:
+            if is_good_response(resp):
+                return resp.content
+            else:
+                return None
+
+    except RequestException as e:
+        log_error('Error during requests to {0} : {1}'.format(url, str(e)))
+        return None
+
+
+def is_good_response(resp):
+    """
+    Returns True if the response seems to be HTML, False otherwise.
+    """
+    content_type = resp.headers['Content-Type'].lower()
+    return (resp.status_code == 200
+            and content_type is not None
+            and content_type.find('html') > -1)
+
+
+def log_error(e):
+    """
+    It is always a good idea to log errors.
+    This function just prints them, but you can
+    make it do anything.
+    """
+    print(e)
+
+def get_auth_key():
+    response= simple_get("https://www.rymer.org/4.0.1/")
+    html = BeautifulSoup(response, 'html.parser')
+    selected= html.find(attrs={"name":"form_key"})
+    return(selected["value"])
+
+def find_rhyme(word):
+    key=get_auth_key()
+    data = {"wpisz_slowo":word,
+            "LNG":"pl",
+            "form_key":"5fe876794f452022f24708c9399fb4c3",
+            "slownik":"P",
+            "minsyl":1,
+            "maxsyl":5,
+            "czemow":"A",
+            "ileLIT":"slowo",
+            "zjakichliter":"ALL",
+            "mozliweLIT":""}
+    r=post("https://www.rymer.org/4.0.1/search1.php",data=data)
+    print(r.text)
