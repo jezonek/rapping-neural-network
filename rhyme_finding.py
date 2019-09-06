@@ -3,7 +3,7 @@ import json
 import os
 import time
 
-from requests import get,post
+from requests import get,post, Session
 from requests.exceptions import RequestException
 from contextlib import closing
 from bs4 import BeautifulSoup
@@ -71,17 +71,17 @@ def log_error(e):
     """
     print(e)
 
-def get_auth_key():
-    response= simple_get("https://www.rymer.org/4.0.1/")
-    html = BeautifulSoup(response, 'html.parser')
-    selected= html.find(attrs={"name":"form_key"})
-    return(selected["value"])
+
 
 def find_rhyme(word):
-    key=get_auth_key()
+    s = Session()
+    response = s.get("https://www.rymer.org/4.0.1/")
+    html = BeautifulSoup(response.text, 'html.parser')
+    selected = html.find(attrs={"name": "form_key"})
+    key=selected["value"]
     data = {"wpisz_slowo":word,
             "LNG":"pl",
-            "form_key":"5fe876794f452022f24708c9399fb4c3",
+            "form_key":key,
             "slownik":"P",
             "minsyl":1,
             "maxsyl":5,
@@ -89,5 +89,5 @@ def find_rhyme(word):
             "ileLIT":"slowo",
             "zjakichliter":"ALL",
             "mozliweLIT":""}
-    r=post("https://www.rymer.org/4.0.1/search1.php",data=data)
+    r=s.post("https://www.rymer.org/4.0.1/search1.php",data=data)
     print(r.text)
