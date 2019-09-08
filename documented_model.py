@@ -4,7 +4,7 @@ import re
 import random
 import numpy as np
 import os
-from rhyme_finding import run_rhyme_spider,convert_json_to_list
+from rhyme_finding import run_rhyme_spider,convert_json_to_list, find_rhyme
 from keras.models import Sequential
 from keras.layers import LSTM
 
@@ -93,8 +93,8 @@ def rhymeindex(lyrics):
             # grabs the last word in each bar
             word = re.sub(r"\W+", '', i.split(" ")[-1]).lower()
             # fixed scrapy spider for searching rhymes in web
-            run_rhyme_spider(word)
-            rhymeslist = convert_json_to_list()
+
+            rhymeslist = find_rhyme(word)
             # need to convert the unicode rhyme words to UTF8
             print(rhymeslist)
             # rhymeslistends contains the last two characters for each word
@@ -136,8 +136,8 @@ def rhymeindex(lyrics):
 def rhyme(line, rhyme_list):
     word = re.sub(r"\W+", '', line.split(" ")[-1]).lower()
 
-    run_rhyme_spider(word)
-    rhymeslist = convert_json_to_list()
+
+    rhymeslist = find_rhyme(word)
     print(rhymeslist)
     rhymeslistends = []
     for i in rhymeslist:

@@ -2,10 +2,7 @@ import subprocess
 import json
 import os
 import time
-
 from requests import get, post, Session
-from requests.exceptions import RequestException
-from contextlib import closing
 from bs4 import BeautifulSoup
 
 
