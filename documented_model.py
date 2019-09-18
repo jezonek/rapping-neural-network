@@ -10,7 +10,7 @@ from keras.layers import LSTM
 
 depth = 4  # depth of the network. changing will require a retrain
 maxsyllables = 16  # maximum syllables per line. Change this freely without retraining the network
-train_mode = False
+train_mode = True
 artist = "ostr"  # used when saving the trained model
 rap_file = "ostr_text.txt"  # where the rap is written to
 
@@ -86,6 +86,9 @@ def rhymeindex(lyrics):
     if train_mode == False:
         print("loading saved rhymes from " + str(artist) + ".rhymes")
         return open(str(artist) + ".rhymes", "r").read().split("\n")
+    elif train_mode == True and os.path.isfile("{}.rhymes".format(artist)):
+        with open("{}.rhymes".format(artist),"r") as opened_file:
+            return opened_file.read().splitlines()
     else:
         rhyme_master_list = []
         print("Alright, building the list of all the rhymes")
@@ -138,7 +141,7 @@ def rhyme(line, rhyme_list):
 
 
     rhymeslist = find_rhyme(word)
-    print(rhymeslist)
+    print("Looking for rhyme for: {}".format(word))
     rhymeslistends = []
     for i in rhymeslist:
         rhymeslistends.append(i[-2:])
@@ -153,10 +156,11 @@ def rhyme(line, rhyme_list):
     try:
         float_rhyme = rhyme_list.index(rhymescheme)
         float_rhyme = float_rhyme / float(len(rhyme_list))
+        print("Calculated floatrhyme: {}".format(float_rhyme))
         return float_rhyme
     except ValueError as e:
-        print("Value Error:{}".format(e.__str__()))
-        return None
+        print("Value Error: {}".format(e.__str__()))
+        return 0
 
 
 # grabs each line of the lyrics file and puts them
@@ -221,6 +225,10 @@ def build_dataset(lyrics, rhyme_list):
         line_list = [line, syllables(line), rhyme(line, rhyme_list)]
         dataset.append(line_list)
 
+
+    with open("training_data.dataset","w+") as opened_file:
+        for one_data in dataset:
+            opened_file.write("{}\n".format(one_data))
     x_data = []
     y_data = []
 
@@ -246,6 +254,7 @@ def build_dataset(lyrics, rhyme_list):
         y = np.array(y)
         y = y.reshape(2, 2)
         y_data.append(y)
+
 
     # returns the 2x2 arrays as datasets
     x_data = np.array(x_data)
