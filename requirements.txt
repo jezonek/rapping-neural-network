@@ -1,6 +1,7 @@
 pyttsx==1.1
-markovify==0.5.4
+markovify
 tensorflow-gpu
 Keras
-numpy==1.12.1
-scrapy
+numpy
+requests
+BeautifulSoup4

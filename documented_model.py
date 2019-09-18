@@ -4,7 +4,7 @@ import re
 import random
 import numpy as np
 import os
-from rhyme_finding import run_rhyme_spider,convert_json_to_list
+from rhyme_finding import run_rhyme_spider,convert_json_to_list, find_rhyme
 from keras.models import Sequential
 from keras.layers import LSTM
 
@@ -86,6 +86,9 @@ def rhymeindex(lyrics):
     if train_mode == False:
         print("loading saved rhymes from " + str(artist) + ".rhymes")
         return open(str(artist) + ".rhymes", "r").read().split("\n")
+    elif train_mode == True and os.path.isfile("{}.rhymes".format(artist)):
+        with open("{}.rhymes".format(artist),"r") as opened_file:
+            return opened_file.read().splitlines()
     else:
         rhyme_master_list = []
         print("Alright, building the list of all the rhymes")
@@ -93,8 +96,8 @@ def rhymeindex(lyrics):
             # grabs the last word in each bar
             word = re.sub(r"\W+", '', i.split(" ")[-1]).lower()
             # fixed scrapy spider for searching rhymes in web
-            run_rhyme_spider(word)
-            rhymeslist = convert_json_to_list()
+
+            rhymeslist = find_rhyme(word)
             # need to convert the unicode rhyme words to UTF8
             print(rhymeslist)
             # rhymeslistends contains the last two characters for each word
@@ -136,9 +139,9 @@ def rhymeindex(lyrics):
 def rhyme(line, rhyme_list):
     word = re.sub(r"\W+", '', line.split(" ")[-1]).lower()
 
-    run_rhyme_spider(word)
-    rhymeslist = convert_json_to_list()
-    print(rhymeslist)
+
+    rhymeslist = find_rhyme(word)
+    print("Looking for rhyme for: {}".format(word))
     rhymeslistends = []
     for i in rhymeslist:
         rhymeslistends.append(i[-2:])
@@ -153,10 +156,11 @@ def rhyme(line, rhyme_list):
     try:
         float_rhyme = rhyme_list.index(rhymescheme)
         float_rhyme = float_rhyme / float(len(rhyme_list))
+        print("Calculated floatrhyme: {}".format(float_rhyme))
         return float_rhyme
     except ValueError as e:
-        print("Value Error:{}".format(e.__str__()))
-        return None
+        print("Value Error: {}".format(e.__str__()))
+        return 0
 
 
 # grabs each line of the lyrics file and puts them
@@ -221,6 +225,10 @@ def build_dataset(lyrics, rhyme_list):
         line_list = [line, syllables(line), rhyme(line, rhyme_list)]
         dataset.append(line_list)
 
+
+    with open("training_data.dataset","w+") as opened_file:
+        for one_data in dataset:
+            opened_file.write("{}\n".format(one_data))
     x_data = []
     y_data = []
 
@@ -246,6 +254,7 @@ def build_dataset(lyrics, rhyme_list):
         y = np.array(y)
         y = y.reshape(2, 2)
         y_data.append(y)
+
 
     # returns the 2x2 arrays as datasets
     x_data = np.array(x_data)
@@ -420,6 +429,8 @@ def main(depth, train_mode):
 
     if train_mode == False:
         bars = generate_lyrics(text_file)
+        print("Generated lyrics:")
+        print(bars)
 
     rhyme_list = rhymeindex(bars)
     if train_mode == True:
