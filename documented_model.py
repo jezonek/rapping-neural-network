@@ -10,7 +10,7 @@ from keras.layers import LSTM
 
 depth = 4  # depth of the network. changing will require a retrain
 maxsyllables = 16  # maximum syllables per line. Change this freely without retraining the network
-train_mode = True
+train_mode = False
 artist = "ostr"  # used when saving the trained model
 rap_file = "ostr_text.txt"  # where the rap is written to
 
@@ -429,6 +429,8 @@ def main(depth, train_mode):
 
     if train_mode == False:
         bars = generate_lyrics(text_file)
+        print("Generated lyrics:")
+        print(bars)
 
     rhyme_list = rhymeindex(bars)
     if train_mode == True:
