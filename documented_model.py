@@ -4,13 +4,14 @@ import re
 import random
 import numpy as np
 import os
+import time
 from rhyme_finding import run_rhyme_spider,convert_json_to_list, find_rhyme
 from keras.models import Sequential
 from keras.layers import LSTM
 
-depth = 4  # depth of the network. changing will require a retrain
+depth = 6  # depth of the network. changing will require a retrain
 maxsyllables = 16  # maximum syllables per line. Change this freely without retraining the network
-train_mode = False
+train_mode = True
 artist = "ostr"  # used when saving the trained model
 rap_file = "ostr_text.txt"  # where the rap is written to
 
@@ -420,6 +421,7 @@ def train(x_data, y_data, model):
 
 
 def main(depth, train_mode):
+    start=time.time()
     model = create_network(depth)
     # change the lyrics file to the file with the lyrics you want to be trained on
     text_file = "ostr_lyrics.txt"
@@ -444,6 +446,8 @@ def main(depth, train_mode):
         for bar in rap:
             f.write(bar)
             f.write("\n")
+    stop=time.time()
+    print("Execution time in sec:{}".format(stop-start))
 
 
 main(depth, train_mode)
