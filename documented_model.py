@@ -9,7 +9,7 @@ from rhyme_finding import run_rhyme_spider,convert_json_to_list, find_rhyme
 from keras.models import Sequential
 from keras.layers import LSTM
 
-depth = 6  # depth of the network. changing will require a retrain
+depth = 4  # depth of the network. changing will require a retrain
 maxsyllables = 16  # maximum syllables per line. Change this freely without retraining the network
 train_mode = True
 artist = "ostr"  # used when saving the trained model
