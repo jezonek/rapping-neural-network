@@ -10,7 +10,7 @@ from utils import create_network, create_markov_model
 
 DEPTH_OF_THE_N_NETWORK = 4  # depth of the network. changing will require a retrain
 MAXIMUM_SYLLABLES_PER_LINE = 16  # maximum syllables per line. Change this freely without retraining the network
-TRAIN_MODE =
+TRAIN_MODE = False
 ARTIST_NAME = "ostr"  # used when saving the trained model
 SOURCE_FILE_WITH_LYRICS = "ostr_text.txt"  # where the rap is written to
 
