@@ -1,57 +1,18 @@
 from __future__ import absolute_import
-import markovify
 import re
 import random
 import numpy as np
 import os
 import time
-from rhyme_finding import run_rhyme_spider,convert_json_to_list, find_rhyme
-from keras.models import Sequential
-from keras.layers import LSTM
+from rhyme_finding import find_rhyme
 
-depth = 4  # depth of the network. changing will require a retrain
-maxsyllables = 16  # maximum syllables per line. Change this freely without retraining the network
-train_mode = True
-artist = "ostr"  # used when saving the trained model
-rap_file = "ostr_text.txt"  # where the rap is written to
+from utils import create_network, create_markov_model
 
-
-def create_network(depth):
-    # Sequential() creates a linear stack of layers
-    model = Sequential()
-    # Adds a LSTM layer as the first layer in the network with
-    # 4 units (nodes), and a 2x2 tensor (which is the same shape as the
-    # training data)
-    model.add(LSTM(4, input_shape=(2, 2), return_sequences=True))
-    # adds 'depth' number of layers to the network with 8 nodes each
-    for i in range(depth):
-        model.add(LSTM(8, return_sequences=True))
-    # adds a final layer with 2 nodes for the output
-    model.add(LSTM(2, return_sequences=True))
-    # prints a summary representation of the model
-    model.summary()
-    # configures the learning process for the network / model
-    # the optimizer function rmsprop: optimizes the gradient descent
-    # the loss function: mse: will use the "mean_squared_error when trying to improve
-    model.compile(optimizer='rmsprop',
-                  loss='mse')
-
-    if artist + ".rap" in os.listdir(".") and train_mode == False:
-        # loads the weights from the hdf5 file saved earlier
-        model.load_weights(str(artist + ".rap"))
-        print("loading saved network: " + str(artist) + ".rap")
-    return model
-
-
-def markov(text_file):
-    read = open(text_file, "r").read()
-    # markovify goes line by line of the lyrics.txt file and
-    # creates a model of the text which allows us to use
-    # make_sentence() later on to create a bar for lyrics
-    # creates a probability distribution for all the words
-    # so it can generate words based on the current word we're on
-    text_model = markovify.NewlineText(read)
-    return text_model
+DEPTH_OF_THE_N_NETWORK = 4  # depth of the network. changing will require a retrain
+MAXIMUM_SYLLABLES_PER_LINE = 16  # maximum syllables per line. Change this freely without retraining the network
+TRAIN_MODE =
+ARTIST_NAME = "ostr"  # used when saving the trained model
+SOURCE_FILE_WITH_LYRICS = "ostr_text.txt"  # where the rap is written to
 
 
 # used when generating bars and making sure the length is not longer
@@ -77,62 +38,68 @@ def syllables(line):
         except IndexError:
             print("Error occured during syllables: {}".format(word))
             continue
-        return count / maxsyllables
+        return count / MAXIMUM_SYLLABLES_PER_LINE
 
 
 
 # writes a rhyme list to a rhymes file that allows for use when
 # building the dataset, and composing the rap
 def rhymeindex(lyrics):
-    if train_mode == False:
-        print("loading saved rhymes from " + str(artist) + ".rhymes")
-        return open(str(artist) + ".rhymes", "r").read().split("\n")
-    elif train_mode == True and os.path.isfile("{}.rhymes".format(artist)):
-        with open("{}.rhymes".format(artist),"r") as opened_file:
+    if TRAIN_MODE == False:
+        return load_saved_rhymes_file()
+    elif TRAIN_MODE == True and os.path.isfile("{}.rhymes".format(ARTIST_NAME)):
+        with open("{}.rhymes".format(ARTIST_NAME), "r") as opened_file:
             return opened_file.read().splitlines()
     else:
-        rhyme_master_list = []
-        print("Alright, building the list of all the rhymes")
-        for i in lyrics:
-            # grabs the last word in each bar
-            word = re.sub(r"\W+", '', i.split(" ")[-1]).lower()
-            # fixed scrapy spider for searching rhymes in web
+        return build_new_rhyme_list(lyrics)
 
-            rhymeslist = find_rhyme(word)
-            # need to convert the unicode rhyme words to UTF8
-            print(rhymeslist)
-            # rhymeslistends contains the last two characters for each word
-            # that could potentially rhyme with our word
-            rhymeslistends = []
-            for i in rhymeslist:
-                rhymeslistends.append(str(i[-2:]))
-            try:
-                # rhymescheme gets all the unique two letter endings and then
-                # finds the one that occurs the most
-                rhymescheme = max(set(rhymeslistends), key=rhymeslistends.count)
-            except Exception:
-                rhymescheme = word[-2:]
-            rhyme_master_list.append(rhymescheme)
-        # rhyme_master_list is a list of the two letters endings that appear
-        # the most in the rhyme list for the word
-        rhyme_master_list = list(set(rhyme_master_list))
 
-        reverselist = [x[::-1] for x in rhyme_master_list]
-        reverselist = sorted(reverselist)
-        # rhymelist is a list of the two letter endings (reversed)
-        # the reason the letters are reversed and sorted is so
-        # if the network messes up a little bit and doesn't return quite
-        # the right values, it can often lead to picking the rhyme ending next to the
-        # expected one in the list. But now the endings will be sorted and close together
-        # so if the network messes up, that's alright and as long as it's just close to the
-        # correct rhymes
-        rhymelist = [x[::-1] for x in reverselist]
+def build_new_rhyme_list(lyrics):
+    rhyme_master_list = []
+    print("Alright, building the list of all the rhymes")
+    for i in lyrics:
+        # grabs the last word in each bar
+        word = re.sub(r"\W+", '', i.split(" ")[-1]).lower()
+        # fixed scrapy spider for searching rhymes in web
 
-        f = open(str(artist) + ".rhymes", "w")
-        f.write("\n".join(rhymelist))
-        f.close()
-        print(rhymelist)
-        return rhymelist
+        rhymeslist = find_rhyme(word)
+        # need to convert the unicode rhyme words to UTF8
+        print(rhymeslist)
+        # rhymeslistends contains the last two characters for each word
+        # that could potentially rhyme with our word
+        rhymeslistends = []
+        for i in rhymeslist:
+            rhymeslistends.append(str(i[-2:]))
+        try:
+            # rhymescheme gets all the unique two letter endings and then
+            # finds the one that occurs the most
+            rhymescheme = max(set(rhymeslistends), key=rhymeslistends.count)
+        except Exception:
+            rhymescheme = word[-2:]
+        rhyme_master_list.append(rhymescheme)
+    # rhyme_master_list is a list of the two letters endings that appear
+    # the most in the rhyme list for the word
+    rhyme_master_list = list(set(rhyme_master_list))
+    reverselist = [x[::-1] for x in rhyme_master_list]
+    reverselist = sorted(reverselist)
+    # rhymelist is a list of the two letter endings (reversed)
+    # the reason the letters are reversed and sorted is so
+    # if the network messes up a little bit and doesn't return quite
+    # the right values, it can often lead to picking the rhyme ending next to the
+    # expected one in the list. But now the endings will be sorted and close together
+    # so if the network messes up, that's alright and as long as it's just close to the
+    # correct rhymes
+    rhymelist = [x[::-1] for x in reverselist]
+    f = open(str(ARTIST_NAME) + ".rhymes", "w")
+    f.write("\n".join(rhymelist))
+    f.close()
+    print(rhymelist)
+    return rhymelist
+
+
+def load_saved_rhymes_file():
+    print("loading saved rhymes from " + str(ARTIST_NAME) + ".rhymes")
+    return open(str(ARTIST_NAME) + ".rhymes", "r").read().split("\n")
 
 
 # converts the index of the most common rhyme ending
@@ -181,7 +148,7 @@ def generate_lyrics(lyrics_file):
     last_words = []
     lyriclength = len(open(lyrics_file).read().split("\n"))
     count = 0
-    markov_model = markov(lyrics_file)
+    markov_model = create_markov_model(lyrics_file)
 
     while len(bars) < lyriclength / 9 and count < lyriclength * 2:
         # By default, the make_sentence method tries, a maximum of 10 times per invocation,
@@ -329,7 +296,7 @@ def vectors_into_song(vectors, generated_lyrics, rhyme_list):
         desired_syllables = vector_half[0]
         desired_rhyme = vector_half[1]
         # desired_syllables is the number of syllables we want
-        desired_syllables = desired_syllables * maxsyllables
+        desired_syllables = desired_syllables * MAXIMUM_SYLLABLES_PER_LINE
         # desired rhyme is the index of the rhyme we want
         desired_rhyme = desired_rhyme * len(rhyme_list)
 
@@ -417,7 +384,7 @@ def train(x_data, y_data, model):
               epochs=5,
               verbose=1)
     # save_weights saves the best weights from training to a hdf5 file
-    model.save_weights(artist + ".rap")
+    model.save_weights(ARTIST_NAME + ".rap")
 
 
 def main(depth, train_mode):
@@ -442,7 +409,7 @@ def main(depth, train_mode):
     if train_mode == False:
         vectors = compose_rap(bars, rhyme_list, text_file, model)
         rap = vectors_into_song(vectors, bars, rhyme_list)
-        f = open(rap_file, "w")
+        f = open(SOURCE_FILE_WITH_LYRICS, "w")
         for bar in rap:
             f.write(bar)
             f.write("\n")
@@ -450,4 +417,4 @@ def main(depth, train_mode):
     print("Execution time in sec:{}".format(stop-start))
 
 
-main(depth, train_mode)
+main(DEPTH_OF_THE_N_NETWORK, TRAIN_MODE)
