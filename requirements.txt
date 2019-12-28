@@ -1,6 +1,6 @@
 pyttsx==1.1
 markovify
-tensorflow-gpu
+tensorflow
 Keras
 numpy
 requests
