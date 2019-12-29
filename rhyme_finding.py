@@ -1,7 +1,8 @@
 import subprocess
 import json
 import os
-from logger import logger
+
+from logger_conf import logger
 from requests import Session
 from bs4 import BeautifulSoup
 
@@ -23,7 +24,7 @@ def convert_json_to_list():
         try:
             content = json.loads(content)
         except ValueError as e:
-            logger.exception(e)
+            logging.exception(e)
             return []
         return [element["rhyme"] for element in content]
 

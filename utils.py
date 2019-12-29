@@ -4,7 +4,7 @@ import re
 import markovify
 
 from conf import MAXIMUM_SYLLABLES_PER_LINE, TRAIN_MODE, ARTIST_NAME
-from logger import logger
+from logger_conf import logger
 from rhyme_finding import find_rhyme
 
 

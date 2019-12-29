@@ -8,7 +8,7 @@ from conf import (
     DEPTH_OF_THE_N_NETWORK,
     FILE_WITH_GENERATED_LYRICS,
 )
-from logger import logger
+from logger_conf import logger
 from lyrics_generation import vectors_into_song, compose_rap, generate_lyrics
 from neural_network import train, build_dataset, create_network
 from utils import split_lyrics_file, prepare_list_of_all_rhymes
@@ -44,4 +44,4 @@ def main(depth, train_mode):
     logger.info("Execution time in sec:{}".format(stop - start))
 
 
-main(DEPTH_OF_THE_N_NETWORK, TRAIN_MODE)
+# main(DEPTH_OF_THE_N_NETWORK, TRAIN_MODE)

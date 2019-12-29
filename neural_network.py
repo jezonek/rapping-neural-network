@@ -11,6 +11,32 @@ from utils import (
 )
 
 
+def create_network(depth, ARTIST_NAME, TRAIN_MODE):
+    # Sequential() creates a linear stack of layers
+    model = Sequential()
+    # Adds a LSTM layer as the first layer in the network with
+    # 4 units (nodes), and a 2x2 tensor (which is the same shape as the
+    # training data)
+    model.add(LSTM(4, input_shape=(2, 2), return_sequences=True))
+    # adds 'depth' number of layers to the network with 8 nodes each
+    for i in range(depth):
+        model.add(LSTM(8, return_sequences=True))
+    # adds a final layer with 2 nodes for the output
+    model.add(LSTM(2, return_sequences=True))
+    # prints a summary representation of the model
+    model.summary()
+    # configures the learning process for the network / model
+    # the optimizer function rmsprop: optimizes the gradient descent
+    # the loss function: mse: will use the "mean_squared_error when trying to improve
+    model.compile(optimizer="rmsprop", loss="mse")
+
+    if ARTIST_NAME + ".rap" in os.listdir(".") and TRAIN_MODE == False:
+        # loads the weights from the hdf5 file saved earlier
+        model.load_weights(str(ARTIST_NAME + ".rap"))
+        print("loading saved network: " + str(ARTIST_NAME) + ".rap")
+    return model
+
+
 def train(x_data, y_data, model):
     # fit is used to train the model for 5 'epochs' (iterations) where
     # the x_data is the training data, and the y_data is the target data
@@ -72,29 +98,3 @@ def build_dataset(lyrics, rhyme_list):
     # print "x shape " + str(x_data.shape)
     # print "y shape " + str(y_data.shape)
     return x_data, y_data
-
-
-def create_network(depth, ARTIST_NAME, TRAIN_MODE):
-    # Sequential() creates a linear stack of layers
-    model = Sequential()
-    # Adds a LSTM layer as the first layer in the network with
-    # 4 units (nodes), and a 2x2 tensor (which is the same shape as the
-    # training data)
-    model.add(LSTM(4, input_shape=(2, 2), return_sequences=True))
-    # adds 'depth' number of layers to the network with 8 nodes each
-    for i in range(depth):
-        model.add(LSTM(8, return_sequences=True))
-    # adds a final layer with 2 nodes for the output
-    model.add(LSTM(2, return_sequences=True))
-    # prints a summary representation of the model
-    model.summary()
-    # configures the learning process for the network / model
-    # the optimizer function rmsprop: optimizes the gradient descent
-    # the loss function: mse: will use the "mean_squared_error when trying to improve
-    model.compile(optimizer="rmsprop", loss="mse")
-
-    if ARTIST_NAME + ".rap" in os.listdir(".") and TRAIN_MODE == False:
-        # loads the weights from the hdf5 file saved earlier
-        model.load_weights(str(ARTIST_NAME + ".rap"))
-        print("loading saved network: " + str(ARTIST_NAME) + ".rap")
-    return model
