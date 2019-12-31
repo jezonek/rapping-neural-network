@@ -29,9 +29,8 @@ def split_lyrics_file(text_file):
 
 def convert_index_of_most_common_rhyme_into_float(line, rhyme_list):
     word = re.sub(r"\W+", "", line.split(" ")[-1]).lower()
-
-    rhymeslist = find_rhyme(word)
     logger.debug("Looking for rhyme for: {}".format(word))
+    rhymeslist = find_rhyme(word)
     rhymeslistends = []
     for i in rhymeslist:
         rhymeslistends.append(i[-2:])

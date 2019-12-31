@@ -43,7 +43,7 @@ def train(x_data, y_data, model):
     # x is the training and y is the target data
     # batch_size is a subset of the training data (2 in this case)
     # verbose simply shows a progress bar
-    model.fit(np.array(x_data), np.array(y_data), batch_size=2, epochs=5, verbose=1)
+    model.fit(np.array(x_data), np.array(y_data), batch_size=2, nb_epoch=5, verbose=1)
     # save_weights saves the best weights from training to a hdf5 file
     model.save_weights(ARTIST_NAME + ".rap")
 

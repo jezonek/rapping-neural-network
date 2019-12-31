@@ -9,7 +9,7 @@ from utils import (
     convert_index_of_most_common_rhyme_into_float,
     calculate_count_of_syllables_as_fraction,
 )
-
+from logger_conf import logger
 
 def vectors_into_song(vectors, generated_lyrics, rhyme_list):
     print("\n\n")
@@ -125,7 +125,10 @@ def vectors_into_song(vectors, generated_lyrics, rhyme_list):
             except TypeError:
                 continue
         # get the line with the max valued score from the fixed_score_list
-        max_score = max(fixed_score_list)
+        try:
+            max_score = max(fixed_score_list)
+        except ValueError:
+            return rap
         for item in scorelist:
             if item[1] == max_score:
                 # append item[0] (the line) to the rap
@@ -185,6 +188,7 @@ def generate_lyrics(lyrics_file):
     markov_model = create_markov_model(lyrics_file)
 
     while len(bars) < lyriclength / 9 and count < lyriclength * 2:
+    # while len(bars)<16 and count < 32:
         # By default, the make_sentence method tries, a maximum of 10 times per invocation,
         # to make a sentence that doesn't overlap too much with the original text.
         # If it is successful, the method returns the sentence as a string.
@@ -213,5 +217,6 @@ def generate_lyrics(lyrics_file):
                 bars.append(bar)
                 last_words.append(last_word)
                 count += 1
-
+        # if len(bars)==16: return bars
+    logger.warning("Generated bars: {}".format(bars))
     return bars

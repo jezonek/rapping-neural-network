@@ -36,12 +36,13 @@ def main(depth, train_mode):
     if train_mode == False:
         vectors = compose_rap(bars, rhyme_list, text_file, model)
         rap = vectors_into_song(vectors, bars, rhyme_list)
-        f = open(FILE_WITH_GENERATED_LYRICS, "w")
-        for bar in rap:
-            f.write(bar)
-            f.write("\n")
+        # f = open(FILE_WITH_GENERATED_LYRICS, "w")
+        # for bar in rap:
+        #     f.write(bar)
+        #     f.write("\n")
+        return rap
     stop = time.time()
     logger.info("Execution time in sec:{}".format(stop - start))
 
 
-# main(DEPTH_OF_THE_N_NETWORK, TRAIN_MODE)
+main(DEPTH_OF_THE_N_NETWORK, TRAIN_MODE)
