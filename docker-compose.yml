@@ -19,7 +19,7 @@ services:
     build: .
     stdin_open: true
     tty: true
-    command: python app.py
+    command: python3 app.py
     volumes:
       - .:/code
     ports:
