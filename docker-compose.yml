@@ -12,7 +12,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
     volumes:
-      - '/tmp/mongodb:/data/db'
+      - '/tmp/mongodb/mongodb:/data/db'
 
 
   web:
