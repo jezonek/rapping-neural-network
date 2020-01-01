@@ -217,6 +217,6 @@ def generate_lyrics(lyrics_file):
                 bars.append(bar)
                 last_words.append(last_word)
                 count += 1
-        # if len(bars)==16: return bars
+        if len(bars)==32: return bars
     logger.warning("Generated bars: {}".format(bars))
     return bars

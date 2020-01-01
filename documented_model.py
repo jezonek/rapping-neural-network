@@ -45,4 +45,4 @@ def main(depth, train_mode):
     logger.info("Execution time in sec:{}".format(stop - start))
 
 
-main(DEPTH_OF_THE_N_NETWORK, TRAIN_MODE)
+# main(DEPTH_OF_THE_N_NETWORK, TRAIN_MODE)
