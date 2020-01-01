@@ -1,5 +1,5 @@
-#FROM python:3
-FROM tensorflow/tensorflow:latest
+FROM python:3.6
+#FROM tensorflow/tensorflow:latest
 ENV PYTHONUNBUFFERED 1
 
 RUN mkdir /code
