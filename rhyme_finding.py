@@ -79,7 +79,7 @@ def find_rhyme(word):
 
 
 def prepare_connection_to_db():
-    client = MongoClient("127.0.0.1:27017", username="root", password="example")
+    client = MongoClient("mongo:27017", username="root", password="example")
     db = client.rhymes_db
     collection = db.rhymes
     return collection
