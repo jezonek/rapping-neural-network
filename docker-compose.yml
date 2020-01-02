@@ -19,7 +19,7 @@ services:
     build: .
     stdin_open: true
     tty: true
-    command: gunicorn
+    command: python3 app.py
     volumes:
       - .:/code
     links:
