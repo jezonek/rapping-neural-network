@@ -63,7 +63,7 @@ def find_rhyme_on_remote(word):
 
 
 def find_rhyme(word):
-    collection = prepare_connection_to_db()
+    collection = prepare_connection_to_db_rhymes()
     logger.debug("Looking in db for {}".format(word))
     check = word_is_in_db(word, collection)
     if check:
@@ -78,10 +78,16 @@ def find_rhyme(word):
     return result
 
 
-def prepare_connection_to_db():
+def prepare_connection_to_db_rhymes():
     client = MongoClient("mongo:27017", username="root", password="example")
     db = client.rhymes_db
     collection = db.rhymes
+    return collection
+
+def prepare_connection_to_db_texts():
+    client = MongoClient("mongo:27017", username="root", password="example")
+    db = client.rhymes_db
+    collection = db.done_texts
     return collection
 
 

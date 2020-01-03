@@ -6,5 +6,4 @@ numpy
 requests
 BeautifulSoup4
 flask
-gunicorn
 pymongo

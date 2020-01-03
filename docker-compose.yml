@@ -12,19 +12,41 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
     volumes:
-      - '/tmp/mongodb/mongodb:/data/db'
-
+      - '/tmp/mongodb:/data/db'
+  #for db management
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
 
   web:
     build: .
     stdin_open: true
     tty: true
-    command: python3 app.py
+    #    command: nohup python3 text_generation.py &
     volumes:
-      - .:/code
+      - .:/app
     links:
       - "mongo:mongo"
     ports:
-      - 80:8000
+      - 80:80
+    depends_on:
+      - mongo
+
+  text_builder:
+    build:
+      context: .
+      dockerfile: Dockerfile_text_builder
+    stdin_open: true
+    tty: true
+    command: python3 text_generation.py
+    volumes:
+      - .:/app
+    links:
+      - "mongo:mongo"
     depends_on:
       - mongo
