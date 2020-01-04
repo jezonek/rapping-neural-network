@@ -13,7 +13,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
     volumes:
       - '/tmp/mongodb:/data/db'
-  for db management
+
   mongo-express:
     image: mongo-express
     restart: always
