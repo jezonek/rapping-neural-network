@@ -27,6 +27,7 @@ services:
     build: .
     stdin_open: true
     tty: true
+    restart: always
     #    command: nohup python3 text_generation.py &
     volumes:
       - .:/app
@@ -43,6 +44,7 @@ services:
       dockerfile: Dockerfile_text_builder
     stdin_open: true
     tty: true
+    restart: always
     command: python3 text_generation.py
     volumes:
       - .:/app
