@@ -40,7 +40,7 @@ def find_rhyme(word):
     logger.debug("Looking in db for {}".format(word))
     check = word_is_in_db(word, collection)
     if check:
-        logger.debug("Found {}".format(check))
+        logger.debug("Found")
         return check["rhymes"]
     logger.debug("Looking remote")
     result = find_rhyme_on_remote(word)
