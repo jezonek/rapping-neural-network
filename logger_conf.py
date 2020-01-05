@@ -9,7 +9,7 @@ logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 fh= logging.FileHandler("{}.log".format(datetime.datetime.now()))
-fh.setLevel(logging.ERROR)
+fh.setLevel(logging.DEBUG)
 
 # create formatter
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')

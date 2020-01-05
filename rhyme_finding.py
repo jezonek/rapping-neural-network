@@ -1,35 +1,8 @@
-import json
-import os
-import subprocess
-
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
 from requests import Session, ConnectionError
 
 from logger_conf import logger
-
-
-def run_rhyme_spider(word):
-    if os.path.exists("rymy/rymy/rymy.json".format(word)):
-        os.remove("rymy/rymy/rymy.json".format(word))
-
-    subprocess.check_call(
-        ["scrapy", "crawl", "rymek", "-o", "rymy.json", "-a" "word={}".format(word)],
-        cwd="rymy/rymy",
-        shell=False,
-    )
-
-
-def convert_json_to_list():
-    with open("rymy/rymy/rymy.json", "r") as opened_file:
-        content = opened_file.read()
-        try:
-            content = json.loads(content)
-        except ValueError as e:
-            logger.exception(e)
-            return []
-        return [element["rhyme"] for element in content]
-
 
 def find_rhyme_on_remote(word):
     s = Session()
@@ -73,7 +46,7 @@ def find_rhyme(word):
     result = find_rhyme_on_remote(word)
     record = {"word": word,
               "rhymes": result}
-    logger.debug("Putting into db: {}".format(record))
+    logger.debug("Putting into db: {}".format(record["word"]))
     collection.insert_one(record)
     return result
 

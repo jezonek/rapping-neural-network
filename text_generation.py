@@ -4,7 +4,7 @@ from rhyme_finding import prepare_connection_to_db_texts
 from time import sleep
 
 
-def generete_texts_periodically():
+def generate_texts_periodically():
     logger.debug("Started text generator")
     collection = prepare_connection_to_db_texts()
     while collection.count_documents({}) < 30:
@@ -17,4 +17,4 @@ def generete_texts_periodically():
 
 if __name__ == '__main__':
     while(True):
-        generete_texts_periodically()
+        generate_texts_periodically()

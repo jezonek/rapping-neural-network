@@ -29,7 +29,7 @@ def split_lyrics_file(text_file):
 
 def convert_index_of_most_common_rhyme_into_float(line, rhyme_list):
     word = re.sub(r"\W+", "", line.split(" ")[-1]).lower()
-    logger.debug("Looking for rhyme for: {}".format(word))
+    logger.debug("Looking rhyme for: {}".format(word))
     rhymeslist = find_rhyme(word)
     rhymeslistends = []
     for i in rhymeslist:
@@ -100,7 +100,6 @@ def build_new_rhyme_list(lyrics):
 
         rhymeslist = find_rhyme(word)
         # need to convert the unicode rhyme words to UTF8
-        logger.debug(rhymeslist)
         # rhymeslistends contains the last two characters for each word
         # that could potentially rhyme with our word
         rhymeslistends = []

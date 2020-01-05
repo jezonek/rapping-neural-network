@@ -3,13 +3,14 @@ import random
 import numpy as np
 
 from conf import MAXIMUM_SYLLABLES_PER_LINE
+from logger_conf import logger
 from utils import (
     create_markov_model,
     split_lyrics_file,
     convert_index_of_most_common_rhyme_into_float,
     calculate_count_of_syllables_as_fraction,
 )
-from logger_conf import logger
+
 
 def vectors_into_song(vectors, generated_lyrics, rhyme_list):
     print("\n\n")
@@ -56,12 +57,12 @@ def vectors_into_song(vectors, generated_lyrics, rhyme_list):
         # the predicted rhyme and generated rhyme and then subtract the penalty
         try:
             score = (
-                1.0
-                - (
-                    abs((float(desired_syllables) - float(syllables)))
-                    + abs((float(desired_rhyme) - float(rhyme)))
-                )
-                - penalty
+                    1.0
+                    - (
+                            abs((float(desired_syllables) - float(syllables)))
+                            + abs((float(desired_rhyme) - float(rhyme)))
+                    )
+                    - penalty
             )
             print(
                 "Calculed_score({},{},{},{})".format(
@@ -152,7 +153,7 @@ def compose_rap(lines, rhyme_list, lyrics_file, model):
     # choose a random line to start in from given lyrics
     initial_index = random.choice(range(len(human_lyrics) - 1))
     # create an initial_lines list consisting of 2 lines
-    initial_lines = human_lyrics[initial_index : initial_index + 8]
+    initial_lines = human_lyrics[initial_index: initial_index + 8]
 
     starting_input = []
     for line in initial_lines:
@@ -180,15 +181,23 @@ def compose_rap(lines, rhyme_list, lyrics_file, model):
     return rap_vectors
 
 
+def get_last_word(bar):
+    last_word = bar.split(" ")[-1]
+    # if the last word is punctuation, get the word before it
+    if last_word[-1] in "!.?,":
+        last_word = last_word[:-1]
+    return last_word
+
+
 def generate_lyrics(lyrics_file):
     bars = []
     last_words = []
     lyriclength = len(open(lyrics_file).read().split("\n"))
-    count = 0
+    iterations = 0
     markov_model = create_markov_model(lyrics_file)
 
-    while len(bars) < lyriclength / 9 and count < lyriclength * 2:
-    # while len(bars)<16 and count < 32:
+    while len(bars) < 100 and iterations < lyriclength * 2:
+        # while len(bars)<16 and count < 32:
         # By default, the make_sentence method tries, a maximum of 10 times per invocation,
         # to make a sentence that doesn't overlap too much with the original text.
         # If it is successful, the method returns the sentence as a string.
@@ -197,25 +206,18 @@ def generate_lyrics(lyrics_file):
 
         # make sure the bar isn't 'None' and that the amount of
         # syllables is under the max syllables
-        if (
-            type(bar) != type(None)
-            and calculate_count_of_syllables_as_fraction(bar) < 1
-        ):
+        if (bar and calculate_count_of_syllables_as_fraction(bar) < 1):
 
             # function to get the last word of the bar
-            def get_last_word(bar):
-                last_word = bar.split(" ")[-1]
-                # if the last word is punctuation, get the word before it
-                if last_word[-1] in "!.?,":
-                    last_word = last_word[:-1]
-                return last_word
-
             last_word = get_last_word(bar)
+
             # only use the bar if it is unique and the last_word
             # has only been seen less than 3 times
             if bar not in bars and last_words.count(last_word) < 3:
                 bars.append(bar)
                 last_words.append(last_word)
-                count += 1
+                iterations += 1
+        if len(bars) == 100: return bars
+
     logger.warning("Generated bars: {}".format(bars))
     return bars
