@@ -34,7 +34,7 @@ services:
     links:
       - "mongo:mongo"
     ports:
-      - 8000:80
+      - 80:80
     environment:
       WEB_CONCURRENCY: 2
     depends_on:
