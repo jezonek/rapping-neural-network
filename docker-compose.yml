@@ -28,13 +28,13 @@ services:
     stdin_open: true
     tty: true
     restart: always
-    #    command: nohup python3 text_generation.py &
+        command: gunicorn app:app
     volumes:
       - .:/app
     links:
       - "mongo:mongo"
     ports:
-      - 80:80
+      - 8000:80
     depends_on:
       - mongo
 
