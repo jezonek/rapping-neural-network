@@ -28,13 +28,15 @@ services:
     stdin_open: true
     tty: true
     restart: always
-        command: gunicorn app:app
+#        command: gunicorn app:app
     volumes:
       - .:/app
     links:
       - "mongo:mongo"
     ports:
       - 8000:80
+    environment:
+      WEB_CONCURRENCY: 2
     depends_on:
       - mongo
 
