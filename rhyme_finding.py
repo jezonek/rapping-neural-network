@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
 from requests import Session, ConnectionError
+import time
 
 from logger_conf import logger
 
@@ -43,6 +44,7 @@ def find_rhyme(word):
         logger.debug("Found")
         return check["rhymes"]
     logger.debug("Looking remote")
+    time.sleep(10)
     result = find_rhyme_on_remote(word)
     record = {"word": word,
               "rhymes": result}

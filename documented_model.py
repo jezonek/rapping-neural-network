@@ -40,7 +40,7 @@ def main(depth, train_mode):
         #     f.write("\n")
         return rap
     stop = time.time()
-    logger.info("Execution time in sec:{}".format(stop - start))
+    logger.DEBUG("Execution time in sec:{}".format(stop - start))
 
 
 
