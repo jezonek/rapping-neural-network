@@ -1,7 +1,8 @@
 pyttsx==1.1
 markovify
-tensorflow-gpu
+tensorflow==1.14
 Keras
 numpy
 requests
 BeautifulSoup4
+pymongo
