@@ -24,7 +24,7 @@ services:
 #      ME_CONFIG_MONGODB_ADMINPASSWORD: example
 
   web:
-    build: ../RNN_webapp/
+    build: ../rapping-neural-network-webapp/
     stdin_open: true
     tty: true
     restart: always
