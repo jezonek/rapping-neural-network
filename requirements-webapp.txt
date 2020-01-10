@@ -1,4 +1,0 @@
-pymongo
-flask
-BeautifulSoup4
-requests

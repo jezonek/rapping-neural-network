@@ -5,5 +5,4 @@ Keras
 numpy
 requests
 BeautifulSoup4
-flask
 pymongo

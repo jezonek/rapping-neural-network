@@ -1,7 +1,8 @@
+from time import sleep
+
 from documented_model import main
 from logger_conf import logger
 from rhyme_finding import prepare_connection_to_db_texts
-from time import sleep
 
 
 def generate_texts_periodically():
@@ -14,7 +15,7 @@ def generate_texts_periodically():
         record = {"text": lines}
         logger.debug("Putting text into db")
         collection.insert_one(record)
-        sleep(60)
+    sleep(60)
 
 if __name__ == '__main__':
     while(True):

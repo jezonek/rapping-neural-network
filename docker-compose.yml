@@ -24,33 +24,28 @@ services:
 #      ME_CONFIG_MONGODB_ADMINPASSWORD: example
 
   web:
-    build: .
+    build: ../RNN_webapp/
     stdin_open: true
     tty: true
     restart: always
-#        command: gunicorn app:app
-    volumes:
-      - .:/app
     links:
       - "mongo:mongo"
     ports:
       - 80:80
-    environment:
-      WEB_CONCURRENCY: 2
     depends_on:
       - mongo
 
-#  text_builder:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile_text_builder
-#    stdin_open: true
-#    tty: true
-#    restart: always
-#    command: python3 text_generation.py
-#    volumes:
-#      - .:/app
-#    links:
-#      - "mongo:mongo"
-#    depends_on:
-#      - mongo
+  text_builder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    stdin_open: true
+    tty: true
+    restart: always
+    command: python3 text_generation.py
+    volumes:
+      - .:/app
+    links:
+      - "mongo:mongo"
+    depends_on:
+      - mongo

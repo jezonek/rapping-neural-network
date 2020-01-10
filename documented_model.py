@@ -5,8 +5,6 @@ import time
 from conf import (
     TRAIN_MODE,
     ARTIST_NAME,
-    DEPTH_OF_THE_N_NETWORK,
-    FILE_WITH_GENERATED_LYRICS,
 )
 from logger_conf import logger
 from lyrics_generation import vectors_into_song, compose_rap, generate_lyrics
@@ -43,6 +41,7 @@ def main(depth, train_mode):
         return rap
     stop = time.time()
     logger.info("Execution time in sec:{}".format(stop - start))
+
 
 
 # main(DEPTH_OF_THE_N_NETWORK, TRAIN_MODE)
