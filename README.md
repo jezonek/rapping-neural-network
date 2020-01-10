@@ -1,48 +1,48 @@
 # Rapping-neural-network
+Hello, this project is my fork of Rapping Neural Network by robbiebarrat.
+My network is trained using O.S.T.R. polish rapper.
+
+Changes made:
+
+- Migration to Python 3.7
+- Code refactor
+- Configuration for deploy as web application with docker
+
+This project is written as part of web applications generating chosen artist's lyrics and writing them into Mongo database.
+
+File docker-compose.yml describes 3 used containers:
+
+- Container with web application based on FastApi and Gunicorn. Made just for reading ready texts from database.
+- Container with MongoDB. Database contains generated lyrics and informations about rhymes schemas.
+- Container with text generation script. Looped python script 
 
 ## Setup
+The easiest way to run this project is using docker with installed docker-compose. 
 
-Install (with python 2.x)
+First clone repository containing web application: 
+[rapping-neural-network-webapp](https://github.com/jezonek/rapping-neural-network-webapp) in the selected directory.
 
-    pip install -U -r requirements.txt 
+Your directory should look like this:
+    
+    ├── rapping-neural-network
+    │   ├── You are reading this file!
+    │   └── ...
+    ├── rapping-neural-network-webapp
+    │   └── app
 
-## Usage
-
-### See [documented_model.py](https://raw.githubusercontent.com/robbiebarrat/rapping-neural-network/master/documented_model.py) for notes as python comments.
+Now you can start all containers using one command:
+    
+    docker-compose -f docker-compose.yml up --build
 
 ### Data preperation
-**If you'd like to use Kanye's lyrics - skip this section**
-`Lyrics.txt` comes with Kanye's entire discography in it. You can either use this, or fill it with other lyrics.
-
-Guide to using your own lyrics with `lyrics.txt`
-* Avoid including things like "[bridge]" or "[intro]" 
-
-* Seperate each line by a newline
-
-* Avoid non alphanumeric characters (besides basic punctuation)
-
-* You don't have to retype everything - just copy and paste from some lyrics website
-
+TBD
 ### Training
-**Skip this part if you are using the default kanye lines**
-
-* In `model.py`, change the variable `artist` to the name of the new artist you've used in `lyrics.txt`
-
-* In `model.py`, change the variable `train_mode` to `True`
-
-* Run the program with `python model.py`, and allow training to finish.
-
+TBD
 ### Generating raps
-
-* In `model.py`, if you've trained a new network, the variable `train_mode` will be `True`, set this back to `False`
-
-* Run the program with `python model.py`
-
-* The rap will be written to the output of your terminal, and also to a file called `neural_rap.txt`
-
-
+TBD
 ## How it works
 
+(From original project)
 Alright, so basically a markov chain will look at the lyrics you entered and generate new lines. Then, it feeds this to a recurrent neural net that will generate a sequence of tuples in the format of 
 
     (desired rhyme, desired count of syllables)
